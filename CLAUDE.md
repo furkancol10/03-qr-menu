@@ -2,7 +2,7 @@
 ## Amaç
 Kafe/restoranlar için QR ile açılan mobil menü, sepetten WhatsApp siparişi ve ürün/fiyat yönetim paneli.
 ## Stack
-TBD (mimari kararından sonra yazılır; ön tercih randevu-sistemi ile aynı: SvelteKit 3 + PostgreSQL, Vercel + Neon DB)
+SvelteKit 3 + Svelte 5, TypeScript, Drizzle + postgres.js, Zod, Tailwind v4, qrcode, Vitest + Playwright, Postgres (test: docker, prod: Neon DB), Vercel + Vercel Blob. Ayrıntı: docs/ARCHITECTURE.md
 ## Komutlar
 - test: TBD
 - build: TBD
