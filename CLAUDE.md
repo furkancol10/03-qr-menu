@@ -4,8 +4,10 @@ Kafe/restoranlar için QR ile açılan mobil menü, sepetten WhatsApp siparişi 
 ## Stack
 SvelteKit 3 + Svelte 5, TypeScript, Drizzle + postgres.js, Zod, Tailwind v4, qrcode, Vitest + Playwright, Postgres (test: docker, prod: Neon DB), Vercel + Vercel Blob. Ayrıntı: docs/ARCHITECTURE.md
 ## Komutlar
-- test: TBD
-- build: TBD
+- test: `npm test` (birim + entegrasyon), `npm run test:e2e` (360px Playwright)
+- build: `npm run build` (`npm run vercel-build` Vercel'de migration + idempotent demo seed)
+- check / lint: `npm run check` / `npm run lint`
+- db: `npm run db:start` (port 5434), `npm run db:migrate`, `npm run db:seed`, `npm run db:generate`
 ## Model rolleri
 Bu projede geliştirici ve mimari taslakçı Gemini Neon (kullanıcı kararı 2026-11-22). Claude (şef) yalnız iskelet, test koşturma ve commit yapar. Gemini commit atmaz.
 ## Kurallar

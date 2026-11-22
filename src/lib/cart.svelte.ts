@@ -58,10 +58,11 @@ export function removeCartItem(lines: CartLine[], itemId: number): CartLine[] {
  * silinen veya `available === false` olan ürünler ayıklanır, fiyat/ad güncellenir.
  */
 export function reconcileCart(lines: CartLine[], products: CartProduct[]): CartLine[] {
-	const map = new Map(products.map((p) => [p.id, p]));
+	const byId: Record<number, CartProduct> = {};
+	for (const p of products) byId[p.id] = p;
 	const out: CartLine[] = [];
 	for (const line of lines) {
-		const fresh = map.get(line.itemId);
+		const fresh = byId[line.itemId];
 		if (!fresh || !fresh.available || line.qty <= 0) continue;
 		out.push({
 			itemId: fresh.id,

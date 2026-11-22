@@ -9,15 +9,11 @@
 
 	let lang = $state<Lang>('tr');
 	let cartOpen = $state(false);
-	let selectedTableCode = $state('');
+	let selectedTableCode = $derived(data.activeTable?.code ?? '');
 
 	const dict = $derived(getDict(lang));
 	const allItems = $derived(data.categories.flatMap((c) => c.items));
 	const cart = $derived(new MenuCart(data.business.slug));
-
-	$effect(() => {
-		selectedTableCode = data.activeTable?.code ?? '';
-	});
 
 	const effectiveTable = $derived(
 		data.tables.find((t) => t.code === selectedTableCode) ?? data.activeTable ?? null
@@ -115,10 +111,7 @@
 
 			<!-- Kategori çubuğu -->
 			{#if data.categories.length > 0}
-				<nav
-					aria-label="Kategoriler"
-					class="mt-2 -mx-3 flex gap-1.5 overflow-x-auto px-3 pb-1"
-				>
+				<nav aria-label="Kategoriler" class="-mx-3 mt-2 flex gap-1.5 overflow-x-auto px-3 pb-1">
 					{#each data.categories as cat (cat.id)}
 						<a
 							href="#cat-{cat.id}"
@@ -171,7 +164,7 @@
 								<div class="flex min-w-0 flex-1 flex-col justify-between gap-2">
 									<div>
 										<div class="flex items-start justify-between gap-2">
-											<h3 class="text-sm font-semibold leading-snug text-stone-900">
+											<h3 class="text-sm leading-snug font-semibold text-stone-900">
 												{itemName}
 											</h3>
 											{#if !item.available}
@@ -258,7 +251,9 @@
 
 	<!-- Yapışkan alt sepet çubuğu -->
 	{#if cart.totalCount > 0}
-		<div class="fixed inset-x-0 bottom-0 z-30 border-t border-stone-200 bg-white/95 p-3 backdrop-blur">
+		<div
+			class="fixed inset-x-0 bottom-0 z-30 border-t border-stone-200 bg-white/95 p-3 backdrop-blur"
+		>
 			<div class="mx-auto max-w-lg">
 				<button
 					type="button"
@@ -267,7 +262,8 @@
 					class="flex min-h-12 w-full items-center justify-between rounded-2xl bg-amber-800 px-4 text-sm font-semibold text-white shadow-md active:bg-amber-900"
 				>
 					<span>
-						{dict.viewCart} ({cart.totalCount} {dict.itemsCount})
+						{dict.viewCart} ({cart.totalCount}
+						{dict.itemsCount})
 					</span>
 					<span class="font-bold">{formatPriceTl(cart.totalKurus)}</span>
 				</button>
@@ -283,7 +279,9 @@
 			aria-modal="true"
 			aria-label={dict.cartTitle}
 		>
-			<div class="max-h-[85dvh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl">
+			<div
+				class="max-h-[85dvh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl"
+			>
 				<div class="flex items-center justify-between border-b border-stone-200 pb-3">
 					<div>
 						<h2 class="text-base font-bold text-stone-900">{dict.cartTitle}</h2>

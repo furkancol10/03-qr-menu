@@ -87,7 +87,9 @@
 	<section class="space-y-2.5">
 		<h2 class="text-sm font-bold text-stone-700">Mevcut kategoriler ({data.categories.length})</h2>
 		{#if data.categories.length === 0}
-			<p class="rounded-xl border border-dashed border-stone-300 bg-white p-4 text-sm text-stone-500">
+			<p
+				class="rounded-xl border border-dashed border-stone-300 bg-white p-4 text-sm text-stone-500"
+			>
 				Henüz kategori eklenmedi.
 			</p>
 		{:else}
@@ -141,7 +143,11 @@
 						</div>
 					</form>
 
-					<form method="POST" action="?/delete" class="mt-2 flex justify-end border-t border-stone-100 pt-2">
+					<form
+						method="POST"
+						action="?/delete"
+						class="mt-2 flex justify-end border-t border-stone-100 pt-2"
+					>
 						<input type="hidden" name="id" value={cat.id} />
 						<button
 							type="submit"

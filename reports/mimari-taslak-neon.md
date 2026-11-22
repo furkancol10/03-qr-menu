@@ -55,4 +55,3 @@ Kaynaklar: [NOTES.md](file:///home/pcf/Desktop/projeler/freelance/portfolyo/03-q
     - **Seçim:** Riskler: açık demo admine spam/uygunsuz içerik (önlem: `rate_limits`, demo yükleme kısıtı, gece sıfırlama), Vercel Blob kota teyidi (belirsiz nokta), 30 sn önbellek gecikmesi. **MVP dışı:** online ödeme, DB sipariş/mutfak ekranı, ürün varyant/ekstra seçenekleri, garson çağırma, çok şube, self-servis kayıt, analitik, 3+ dil.
     - **Gerekçe:** Dar kapsam ve demo korumaları 1-2 günde kesintisiz sergilenebilir bir ürün sağlar.
     - **Reddedilen:** Varyant/sipariş takibi gibi v2 işlerini MVP'ye eklemek (teslim ve bakım riskini katlar).
-

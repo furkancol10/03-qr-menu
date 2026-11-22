@@ -9,11 +9,7 @@ export type TableInput = {
 };
 
 export async function listTables(db: Db, businessId: number) {
-	return db
-		.select()
-		.from(tables)
-		.where(eq(tables.businessId, businessId))
-		.orderBy(asc(tables.id));
+	return db.select().from(tables).where(eq(tables.businessId, businessId)).orderBy(asc(tables.id));
 }
 
 export async function createTable(db: Db, businessId: number, input: TableInput) {
