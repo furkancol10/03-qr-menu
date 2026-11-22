@@ -1,0 +1,40 @@
+import type { Dict } from './tr';
+
+export const en: Dict = {
+	langLabel: 'EN',
+	switchLang: 'TR',
+	tablePrefix: 'Table',
+	selectTable: 'Select table',
+	noTableWarning: 'Please select your table or scan the QR code on your table to order.',
+	soldOut: 'Sold out',
+	addToCart: 'Add',
+	inCart: 'In cart',
+	viewCart: 'View Cart',
+	cartTitle: 'Your Cart',
+	cartEmpty: 'Your cart is empty.',
+	total: 'Total',
+	noteLabel: 'Order note (optional)',
+	notePlaceholder: 'e.g. no sugar, oat milk...',
+	orderViaWhatsapp: 'Order via WhatsApp',
+	whatsappUnavailable: 'Business WhatsApp number is not configured.',
+	clearCart: 'Clear cart',
+	close: 'Close',
+	remove: 'Remove',
+	increase: 'Increase',
+	decrease: 'Decrease',
+	itemsCount: 'items',
+	allergensTitle: 'Allergens',
+	emptyCategory: 'No items in this category yet.',
+	orderGreeting: 'Hello',
+	orderTableLine: 'Table',
+	orderNoteLine: 'Note',
+	orderTotalLine: 'Total',
+	allergens: {
+		gluten: 'Gluten',
+		sut: 'Dairy',
+		yumurta: 'Eggs',
+		kuruyemis: 'Nuts',
+		soya: 'Soy',
+		susam: 'Sesame'
+	}
+};

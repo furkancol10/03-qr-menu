@@ -1,0 +1,23 @@
+name: Demo sıfırlama
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # her gece 00:00 UTC (03:00 İstanbul)
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: /api/demo-reset çağır
+        env:
+          DEMO_URL: ${{ secrets.DEMO_URL }}
+          DEMO_RESET_SECRET: ${{ secrets.DEMO_RESET_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 10 \
+            --max-time 60 -X POST \
+            -H "x-demo-reset-secret: ${DEMO_RESET_SECRET}" \
+            "${DEMO_URL%/}/api/demo-reset"

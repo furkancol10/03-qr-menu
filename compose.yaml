@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    ports:
+      - '5434:5432'
+    environment:
+      POSTGRES_USER: qrmenu
+      POSTGRES_PASSWORD: qrmenu
+      POSTGRES_DB: qrmenu
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U qrmenu -d qrmenu']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+volumes:
+  pgdata:

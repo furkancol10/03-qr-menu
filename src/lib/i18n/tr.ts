@@ -1,0 +1,40 @@
+export const tr = {
+	langLabel: 'TR',
+	switchLang: 'EN',
+	tablePrefix: 'Masa',
+	selectTable: 'Masa seçin',
+	noTableWarning: 'Sipariş vermek için lütfen masanızı seçin veya masadaki QR kodu okutun.',
+	soldOut: 'Tükendi',
+	addToCart: 'Ekle',
+	inCart: 'Sepette',
+	viewCart: 'Sepeti Gör',
+	cartTitle: 'Sepetiniz',
+	cartEmpty: 'Sepetiniz boş.',
+	total: 'Toplam',
+	noteLabel: 'Sipariş notu (isteğe bağlı)',
+	notePlaceholder: 'Örn. şekersiz, süt yerine yulaf sütü...',
+	orderViaWhatsapp: 'WhatsApp ile Sipariş Ver',
+	whatsappUnavailable: 'İşletme WhatsApp numarası tanımlı değil.',
+	clearCart: 'Sepeti temizle',
+	close: 'Kapat',
+	remove: 'Kaldır',
+	increase: 'Artır',
+	decrease: 'Azalt',
+	itemsCount: 'ürün',
+	allergensTitle: 'Alerjenler',
+	emptyCategory: 'Bu kategoride henüz ürün yok.',
+	orderGreeting: 'Merhaba',
+	orderTableLine: 'Masa',
+	orderNoteLine: 'Not',
+	orderTotalLine: 'Toplam',
+	allergens: {
+		gluten: 'Gluten',
+		sut: 'Süt',
+		yumurta: 'Yumurta',
+		kuruyemis: 'Kuruyemiş',
+		soya: 'Soya',
+		susam: 'Susam'
+	} as Record<string, string>
+};
+
+export type Dict = typeof tr;
