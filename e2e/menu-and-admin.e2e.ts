@@ -96,4 +96,95 @@ test.describe('QR Menü MVP uçtan uca akış (360px)', () => {
 			/^data:image\/png;base64,/
 		);
 	});
+
+	test('?masa=GECERSIZ uyarısı, tükendi ürün sunucu/localStorage koruması, demo-reset 401 ve giriş hız sınırı', async ({
+		page,
+		request
+	}) => {
+		// 1. ?masa=GECERSIZ -> masa rozeti yok, sepette uyarı var, WhatsApp mesajında masa yazmaz
+		await page.goto('/demo-kafe?masa=GECERSIZ');
+		await expect(page.getByTestId('table-badge')).toHaveCount(0);
+		await expect(page.locator('#table-select')).toBeVisible();
+
+		const lemonadeCard = page.locator('article', { hasText: 'Ev Yapımı Limonata' });
+		await lemonadeCard.getByRole('button', { name: /\+ Ekle/ }).click();
+		await page.getByTestId('open-cart').click();
+
+		await expect(
+			page.getByText('Sipariş vermek için lütfen masanızı seçin veya masadaki QR kodu okutun.')
+		).toBeVisible();
+		const waHref = await page.getByTestId('whatsapp-order-link').getAttribute('href');
+		expect(waHref).toBeTruthy();
+		const decoded = decodeURIComponent(waHref!.split('?text=')[1]);
+		expect(decoded).not.toContain('Masa:');
+		expect(decoded).not.toContain('GECERSIZ');
+
+		// 2. Tükendi ürün (Limonlu Tart) localStorage'a enjekte edilse ve /api/order-link'e gönderilse bile girmez
+		const tartTestId = await page
+			.locator('article', { hasText: 'Limonlu Tart' })
+			.getAttribute('data-testid');
+		const tartId = Number(tartTestId!.replace('menu-item-', ''));
+		expect(tartId).toBeGreaterThan(0);
+
+		const apiOrderRes = await request.post('/api/order-link', {
+			data: {
+				slug: 'demo-kafe',
+				tableCode: '5',
+				lang: 'tr',
+				items: [{ itemId: tartId, qty: 2 }]
+			}
+		});
+		expect(apiOrderRes.status()).toBe(409);
+		const apiOrderBody = (await apiOrderRes.json()) as {
+			whatsappUrl: string | null;
+			unavailableItemIds: number[];
+		};
+		expect(apiOrderBody.whatsappUrl).toBeNull();
+		expect(apiOrderBody.unavailableItemIds).toContain(tartId);
+
+		await page.evaluate((id) => {
+			localStorage.setItem(
+				'qrmenu:cart:demo-kafe',
+				JSON.stringify([
+					{
+						itemId: id,
+						nameTr: 'Limonlu Tart',
+						nameEn: 'Lemon Tart',
+						priceKurus: 16000,
+						qty: 2
+					}
+				])
+			);
+		}, tartId);
+		await page.reload();
+		await expect(page.getByTestId('open-cart')).toHaveCount(0);
+
+		// 3. /api/demo-reset secret yok/yanlış iken 401 döner (Content-Type: application/json ile CSRF'ye takılmaz)
+		const noSecretRes = await request.post('/api/demo-reset', {
+			headers: { 'content-type': 'application/json' },
+			data: {}
+		});
+		expect(noSecretRes.status()).toBe(401);
+		const badSecretRes = await request.post('/api/demo-reset', {
+			headers: {
+				'content-type': 'application/json',
+				'x-demo-reset-secret': 'yanlis-deger'
+			},
+			data: {}
+		});
+		expect(badSecretRes.status()).toBe(401);
+
+		// 4. /admin/login: aynı e-postaya 6. deneme 429 hız sınırıyla engellenir
+		await page.goto('/admin/login');
+		for (let i = 1; i <= 5; i++) {
+			await page.locator('input[name="email"]').fill('hiz-siniri@defnekafe.example');
+			await page.locator('input[name="password"]').fill(`yanlis-${i}`);
+			await page.getByRole('button', { name: 'Giriş yap' }).click();
+			await expect(page.getByRole('alert')).toContainText('E-posta veya şifre hatalı.');
+		}
+		await page.locator('input[name="email"]').fill('hiz-siniri@defnekafe.example');
+		await page.locator('input[name="password"]').fill('yanlis-6');
+		await page.getByRole('button', { name: 'Giriş yap' }).click();
+		await expect(page.getByRole('alert')).toContainText('Çok fazla deneme');
+	});
 });

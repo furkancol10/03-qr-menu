@@ -1,10 +1,24 @@
 import { put } from '@vercel/blob';
+import { eq } from 'drizzle-orm';
 import { DEMO_GALLERY_URLS, DEMO_SLUG } from '../../demo';
 import { isSafeImageUrl } from '../../validation';
-import type { BusinessSettings } from '../db/schema';
+import type { Db } from '../db/client';
+import { businesses, type BusinessSettings } from '../db/schema';
+import { UPLOAD_LIMIT, uploadKey, type RateLimiter } from '../rate-limit';
 
 export const MAX_IMAGE_BYTES = 1024 * 1024; // 1 MB
 const ALLOWED_MIME = new Set(['image/webp', 'image/jpeg', 'image/png']);
+
+export type BlobPutFn = (
+	pathname: string,
+	body: File,
+	options: { access: 'public'; contentType: string; token: string }
+) => Promise<{ url: string }>;
+
+export type UploadOptions = {
+	token?: string;
+	putBlob?: BlobPutFn;
+};
 
 type BusinessLike = {
 	slug: string;
@@ -52,8 +66,11 @@ export function validateImageForBusiness(
 export async function uploadItemImage(
 	business: BusinessLike & { id: number },
 	file: File,
-	token: string | undefined = process.env.BLOB_READ_WRITE_TOKEN
+	options: UploadOptions = {}
 ): Promise<{ ok: true; url: string } | { ok: false; status: number; message: string }> {
+	const token = options.token ?? process.env.BLOB_READ_WRITE_TOKEN;
+	const putBlob: BlobPutFn = options.putBlob ?? put;
+
 	if (!canUploadImages(business)) {
 		return { ok: false, status: 403, message: 'Demo işletmede görsel yükleme kapalıdır.' };
 	}
@@ -77,10 +94,55 @@ export async function uploadItemImage(
 
 	const ext = file.type === 'image/webp' ? 'webp' : file.type === 'image/png' ? 'png' : 'jpg';
 	const safePath = `menu/${business.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-	const blob = await put(safePath, file, {
+	const blob = await putBlob(safePath, file, {
 		access: 'public',
 		contentType: file.type,
 		token
 	});
 	return { ok: true, url: blob.url };
+}
+
+export async function handleUploadPost(
+	event: { locals: App.Locals; request: Request },
+	deps: { db: Db; rateLimiter: RateLimiter; token?: string; putBlob?: BlobPutFn }
+): Promise<Response> {
+	if (!event.locals.admin) {
+		return Response.json({ error: 'Oturum gerekli.' }, { status: 401 });
+	}
+
+	const [business] = await deps.db
+		.select({ id: businesses.id, slug: businesses.slug, settings: businesses.settings })
+		.from(businesses)
+		.where(eq(businesses.id, event.locals.admin.businessId));
+
+	if (!business) {
+		return Response.json({ error: 'İşletme bulunamadı.' }, { status: 404 });
+	}
+
+	if (!canUploadImages(business)) {
+		return Response.json({ error: 'Demo işletmede görsel yükleme kapalıdır.' }, { status: 403 });
+	}
+
+	const allowed = await deps.rateLimiter.hit(uploadKey(business.id), UPLOAD_LIMIT);
+	if (!allowed) {
+		return Response.json(
+			{ error: 'Çok fazla yükleme denemesi. Lütfen biraz sonra tekrar deneyin.' },
+			{ status: 429 }
+		);
+	}
+
+	const formData = await event.request.formData();
+	const file = formData.get('file');
+	if (!(file instanceof File)) {
+		return Response.json({ error: 'Görsel dosyası gerekli.' }, { status: 400 });
+	}
+
+	const result = await uploadItemImage(business, file, {
+		token: deps.token,
+		putBlob: deps.putBlob
+	});
+	if (!result.ok) {
+		return Response.json({ error: result.message }, { status: result.status });
+	}
+	return Response.json({ url: result.url });
 }

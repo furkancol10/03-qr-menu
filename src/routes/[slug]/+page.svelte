@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { MenuCart } from '#lib/cart.svelte.ts';
+	import { MenuCart, reconcileCart } from '#lib/cart.svelte.ts';
 	import { allergenLabel, getDict, pickLocalized, type Lang } from '#lib/i18n/index.ts';
 	import { buildWhatsAppOrderUrl, formatPriceTl } from '#lib/whatsapp.ts';
 	import type { PageProps } from './$types';
@@ -19,6 +19,8 @@
 		data.tables.find((t) => t.code === selectedTableCode) ?? data.activeTable ?? null
 	);
 
+	const validLines = $derived(reconcileCart(cart.lines, allItems));
+
 	onMount(() => {
 		try {
 			const savedLang = localStorage.getItem('qrmenu:lang');
@@ -28,6 +30,36 @@
 		}
 		cart.hydrate(allItems);
 	});
+
+	async function syncCartWithServer() {
+		if (cart.lines.length === 0) return;
+		try {
+			const res = await fetch('/api/order-link', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({
+					slug: data.business.slug,
+					tableCode: effectiveTable?.code ?? null,
+					lang,
+					items: cart.lines.map((l) => ({ itemId: l.itemId, qty: l.qty })),
+					note: cart.note
+				})
+			});
+			const payload = (await res.json()) as { unavailableItemIds?: number[] };
+			if (Array.isArray(payload.unavailableItemIds)) {
+				for (const id of payload.unavailableItemIds) {
+					cart.remove(id);
+				}
+			}
+		} catch {
+			// Ağ hatasında yerel sepet korunur
+		}
+	}
+
+	function openCart() {
+		cartOpen = true;
+		void syncCartWithServer();
+	}
 
 	function toggleLang() {
 		lang = lang === 'tr' ? 'en' : 'tr';
@@ -44,7 +76,7 @@
 			businessName: data.business.name,
 			tableLabel: effectiveTable?.label ?? null,
 			lang,
-			lines: cart.lines,
+			lines: validLines,
 			note: cart.note
 		})
 	);
@@ -258,7 +290,7 @@
 				<button
 					type="button"
 					data-testid="open-cart"
-					onclick={() => (cartOpen = true)}
+					onclick={openCart}
 					class="flex min-h-12 w-full items-center justify-between rounded-2xl bg-amber-800 px-4 text-sm font-semibold text-white shadow-md active:bg-amber-900"
 				>
 					<span>
