@@ -2,6 +2,8 @@
 
 Kafe ve restoranlar için **üyeliksiz, 360px mobil öncelikli QR menü**, sepetten masa numaralı WhatsApp siparişi ve kategori/ürün/masa yönetim paneli.
 
+**Canlı demo:** [fc-qr-menu.vercel.app/demo-kafe](https://fc-qr-menu.vercel.app/demo-kafe) (yönetim paneli: `/admin/login`, demo girişi sayfada hazır; demo her gece başlangıç verisine döner)
+
 ## Özellikler
 
 - **Müşteri menüsü (`/[slug]?masa=KOD`):** Kategori çubuğu, ürün görselleri (WebP + lazy load), kuruş hassasiyetli TL fiyatlar, alerjen etiketleri ve "Tükendi" durumu
