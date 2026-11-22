@@ -1,9 +1,9 @@
 # QR Menü — Mimari Taslağı
 
-Kaynaklar: [NOTES.md](file:///home/pcf/Desktop/projeler/freelance/portfolyo/03-qr-menu/docs/NOTES.md) · [ARCHITECTURE.md](file:///home/pcf/Desktop/projeler/freelance/portfolyo/02-randevu-sistemi/docs/ARCHITECTURE.md)
+Kaynaklar: [NOTES.md](file:///home/pcf/Desktop/projeler/freelance/portfolyo/03-qr-menu/docs/NOTES.md) · [ARCHITECTURE.md](file:///home/pcf/Desktop/projeler/freelance/portfolyo/fc-randevu-sistemi/docs/ARCHITECTURE.md)
 
 1. **Stack ayrıntısı**
-   - **Seçim:** `02-randevu-sistemi` çekirdeği aynen kullanılır: SvelteKit 3 + Svelte 5 (runes), TypeScript, `adapter-vercel`, Drizzle ORM + `postgres.js` (Neon Frankfurt pooled, `prepare: false`), Zod, Tailwind v4, Vitest + Playwright; ek olarak yalnızca `qrcode`.
+   - **Seçim:** `fc-randevu-sistemi` çekirdeği aynen kullanılır: SvelteKit 3 + Svelte 5 (runes), TypeScript, `adapter-vercel`, Drizzle ORM + `postgres.js` (Neon Frankfurt pooled, `prepare: false`), Zod, Tailwind v4, Vitest + Playwright; ek olarak yalnızca `qrcode`.
    - **Gerekçe:** Önceki onaylı mimariyle tam tutarlılık portföy kalitesini yükseltir ve 1-2 günlük MVP hızını korur; randevuya özgü `date-fns` elenir.
    - **Reddedilen:** Next.js veya Supabase (yığın parçalanması ve ek kurulum yükü).
 
@@ -33,7 +33,7 @@ Kaynaklar: [NOTES.md](file:///home/pcf/Desktop/projeler/freelance/portfolyo/03-q
    - **Reddedilen:** Sunucu taraflı Puppeteer/PDFKit (bundle boyutu ve soğuk başlatma maliyeti).
 
 7. **Admin girişi**
-   - **Seçim:** `02-randevu-sistemi` deseni aynen korunur: e-posta + `@node-rs/argon2`, DB `sessions`, `httpOnly/SameSite=Lax/Secure` çerez, Postgres `rate_limits`, tüm sorgularda `session.business_id` filtresi; herkese açık demoda hazır doldurulmuş giriş + GitHub Actions cron → korumalı `/api/demo-reset`.
+   - **Seçim:** `fc-randevu-sistemi` deseni aynen korunur: e-posta + `@node-rs/argon2`, DB `sessions`, `httpOnly/SameSite=Lax/Secure` çerez, Postgres `rate_limits`, tüm sorgularda `session.business_id` filtresi; herkese açık demoda hazır doldurulmuş giriş + GitHub Actions cron → korumalı `/api/demo-reset`.
    - **Gerekçe:** Önceki projedeki kanıtlanmış güvenlik mimarisini yeniden kullanmak hata riskini ve süreyi azaltır.
    - **Reddedilen:** Auth.js veya harici kimlik sağlayıcı (gereksiz soyutlama).
 

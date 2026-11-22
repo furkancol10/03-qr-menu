@@ -5,10 +5,10 @@ Tam metin: reports/mimari-taslak-neon.md (Gemini Neon taslağı, aynen onayland�
 
 ## Şartlar (şef, kullanıcı onaylı)
 1. Demo işletmenin admininde görsel yükleme kapalı; yalnız static/demo/ altındaki hazır görsellerden seçilir. Yükleme yalnız demo olmayan işletmelerde açık.
-2. Auth (argon2, DB oturum, çerez), Postgres rate_limits, DB istemci (serverless havuz ayarları), demo-reset ve deploy-db desenleri ../02-randevu-sistemi içinden kopyalanıp uyarlanır; sıfırdan yazılmaz.
+2. Auth (argon2, DB oturum, çerez), Postgres rate_limits, DB istemci (serverless havuz ayarları), demo-reset ve deploy-db desenleri ../fc-randevu-sistemi içinden kopyalanıp uyarlanır; sıfırdan yazılmaz.
 
 1. **Stack ayrıntısı**
-   - **Seçim:** `02-randevu-sistemi` çekirdeği aynen kullanılır: SvelteKit 3 + Svelte 5 (runes), TypeScript, `adapter-vercel`, Drizzle ORM + `postgres.js` (Neon Frankfurt pooled, `prepare: false`), Zod, Tailwind v4, Vitest + Playwright; ek olarak yalnızca `qrcode`.
+   - **Seçim:** `fc-randevu-sistemi` çekirdeği aynen kullanılır: SvelteKit 3 + Svelte 5 (runes), TypeScript, `adapter-vercel`, Drizzle ORM + `postgres.js` (Neon Frankfurt pooled, `prepare: false`), Zod, Tailwind v4, Vitest + Playwright; ek olarak yalnızca `qrcode`.
    - **Gerekçe:** Önceki onaylı mimariyle tam tutarlılık portföy kalitesini yükseltir ve 1-2 günlük MVP hızını korur; randevuya özgü `date-fns` elenir.
    - **Reddedilen:** Next.js veya Supabase (yığın parçalanması ve ek kurulum yükü).
 
@@ -38,7 +38,7 @@ Tam metin: reports/mimari-taslak-neon.md (Gemini Neon taslağı, aynen onayland�
    - **Reddedilen:** Sunucu taraflı Puppeteer/PDFKit (bundle boyutu ve soğuk başlatma maliyeti).
 
 7. **Admin girişi**
-   - **Seçim:** `02-randevu-sistemi` deseni aynen korunur: e-posta + `@node-rs/argon2`, DB `sessions`, `httpOnly/SameSite=Lax/Secure` çerez, Postgres `rate_limits`, tüm sorgularda `session.business_id` filtresi; herkese açık demoda hazır doldurulmuş giriş + GitHub Actions cron → korumalı `/api/demo-reset`.
+   - **Seçim:** `fc-randevu-sistemi` deseni aynen korunur: e-posta + `@node-rs/argon2`, DB `sessions`, `httpOnly/SameSite=Lax/Secure` çerez, Postgres `rate_limits`, tüm sorgularda `session.business_id` filtresi; herkese açık demoda hazır doldurulmuş giriş + GitHub Actions cron → korumalı `/api/demo-reset`.
    - **Gerekçe:** Önceki projedeki kanıtlanmış güvenlik mimarisini yeniden kullanmak hata riskini ve süreyi azaltır.
    - **Reddedilen:** Auth.js veya harici kimlik sağlayıcı (gereksiz soyutlama).
 
